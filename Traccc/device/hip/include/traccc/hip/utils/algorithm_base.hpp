@@ -8,7 +8,11 @@
 #pragma once
 
 // Local include(s).
+#include "traccc/hip/utils/await.hpp"
 #include "traccc/hip/utils/stream.hpp"
+
+// Project include(s).
+#include "traccc/device/abstract_await.hpp"
 
 // System include(s).
 #include <functional>
@@ -19,24 +23,32 @@ namespace traccc::hip {
 ///
 /// Holding on to data that all HIP algorithms make use of.
 ///
-class algorithm_base {
+class algorithm_base : public virtual device::abstract_await {
  public:
   /// Constructor for the algorithm base
   ///
   /// @param str The HIP stream to perform all operations on
+  /// @param await_func The function to use for synchronizing async operations
   ///
-  explicit algorithm_base(hip::stream& str);
+  explicit algorithm_base(hip::stream& str,
+                          await_function_type await_func = await_sync_event);
 
   /// Get the HIP stream of the algorithm
   hip::stream& stream() const;
   /// Get the warp size of the GPU being used
   unsigned int warp_size() const;
+  /// Synchronize an event related to asynchronous operations
+  /// @param event The event to synchronize
+  ///
+  void await(vecmem::abstract_event& event) const override;
 
  private:
   /// The HIP stream to use
   std::reference_wrapper<hip::stream> m_stream;
   /// Warp size of the GPU being used
   unsigned int m_warp_size;
+  /// The function to use for synchronizing async operations
+  await_function_type m_await_func;
 
 };  // class algorithm_base
 

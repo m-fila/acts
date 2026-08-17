@@ -25,8 +25,7 @@ clusterization_algorithm::clusterization_algorithm(
     hip::stream& str, const config_type& config,
     std::unique_ptr<const Logger> logger, await_function_type await_func)
     : device::clusterization_algorithm(mr, copy, config, std::move(logger)),
-      hip::algorithm_base(str),
-      m_await_func(await_func) {}
+      hip::algorithm_base(str, std::move(await_func)) {}
 
 bool clusterization_algorithm::input_is_contiguous(
     const edm::silicon_cell_collection::const_view& /*cells*/) const {
@@ -81,10 +80,6 @@ void clusterization_algorithm::cluster_maker_kernel(
   // The base class destroys the input buffers right after this call, so
   // the kernel must finish before returning.
   stream().synchronize();
-}
-
-void clusterization_algorithm::await(vecmem::abstract_event& event) const {
-  m_await_func(event, stream());
 }
 
 }  // namespace traccc::hip

@@ -23,4 +23,8 @@ unsigned int algorithm_base::warp_size() const {
   return m_warp_size;
 }
 
+void algorithm_base::await(vecmem::abstract_event& event) const {
+  m_await_func(event, m_stream);
+}
+
 }  // namespace traccc::hip
