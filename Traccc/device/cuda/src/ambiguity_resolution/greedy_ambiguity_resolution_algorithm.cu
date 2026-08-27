@@ -147,7 +147,7 @@ greedy_ambiguity_resolution_algorithm::operator()(
   vecmem::data::jagged_vector_buffer<measurement_id_type> meas_ids_buffer{
       candidate_sizes, m_mr.main, m_mr.host,
       vecmem::data::buffer_type::resizable};
-  m_copy.get().setup(meas_ids_buffer)->ignore();
+  m_copy.get().setup(vecmem::no_event, meas_ids_buffer);
 
   // The sum of the number of candidates (measurements) of all tracks
   const unsigned int n_cands_total =
@@ -158,7 +158,7 @@ greedy_ambiguity_resolution_algorithm::operator()(
   // measurements
   vecmem::data::vector_buffer<measurement_id_type> flat_meas_ids_buffer{
       n_cands_total, m_mr.main, vecmem::data::buffer_type::resizable};
-  m_copy.get().setup(flat_meas_ids_buffer)->ignore();
+  m_copy.get().setup(vecmem::no_event, flat_meas_ids_buffer);
   vecmem::data::vector_buffer<traccc::scalar> pvals_buffer{n_tracks, m_mr.main};
   vecmem::data::vector_buffer<unsigned int> n_meas_buffer{n_tracks, m_mr.main};
   thrust::fill(thrust_policy, n_meas_buffer.ptr(),
@@ -202,7 +202,7 @@ greedy_ambiguity_resolution_algorithm::operator()(
   vecmem::data::vector_buffer<unsigned int> pre_accepted_ids_buffer{n_accepted,
                                                                     m_mr.main};
 
-  m_copy.get().setup(pre_accepted_ids_buffer)->ignore();
+  m_copy.get().setup(vecmem::no_event, pre_accepted_ids_buffer);
 
   // Find the indices of pre-accepted tracks by checking if status is 1
   auto cit_begin = thrust::counting_iterator<int>(0);
@@ -230,7 +230,7 @@ greedy_ambiguity_resolution_algorithm::operator()(
   // measurement ID.
   vecmem::data::vector_buffer<std::size_t> unique_meas_counts_buffer{meas_count,
                                                                      m_mr.main};
-  m_copy.get().setup(unique_meas_counts_buffer)->ignore();
+  m_copy.get().setup(vecmem::no_event, unique_meas_counts_buffer);
 
   // Counting can be done using reduce_by_key and constant iterator
   thrust::reduce_by_key(thrust_policy, flat_meas_ids_buffer.ptr(),
@@ -275,7 +275,7 @@ greedy_ambiguity_resolution_algorithm::operator()(
   vecmem::data::jagged_vector_buffer<unsigned int>
       tracks_per_measurement_buffer(unique_meas_counts, m_mr.main, m_mr.host,
                                     vecmem::data::buffer_type::resizable);
-  m_copy.get().setup(tracks_per_measurement_buffer)->ignore();
+  m_copy.get().setup(vecmem::no_event, tracks_per_measurement_buffer);
 
   // Make the track_status_per_measurement vector
   // Each sub vector contains whether the track ids is still associated with
@@ -285,7 +285,7 @@ greedy_ambiguity_resolution_algorithm::operator()(
       unique_meas_counts, m_mr.main, m_mr.host,
       vecmem::data::buffer_type::resizable);
 
-  m_copy.get().setup(track_status_per_measurement_buffer)->ignore();
+  m_copy.get().setup(vecmem::no_event, track_status_per_measurement_buffer);
 
   // Make the number of accetped_tracks_per_measurement vector
   // Each element represents the number of associated tracks with the unique
@@ -337,7 +337,7 @@ greedy_ambiguity_resolution_algorithm::operator()(
                                                             m_mr.main};
   thrust::fill(thrust_policy, n_shared_buffer.ptr(),
                n_shared_buffer.ptr() + n_tracks, 0);
-  m_copy.get().setup(n_shared_buffer)->ignore();
+  m_copy.get().setup(vecmem::no_event, n_shared_buffer);
 
   // Count the number of shared measurements
   {
@@ -372,32 +372,32 @@ greedy_ambiguity_resolution_algorithm::operator()(
   // measurements and pvalues
   vecmem::data::vector_buffer<unsigned int> sorted_ids_buffer{n_accepted,
                                                               m_mr.main};
-  m_copy.get().setup(sorted_ids_buffer)->ignore();
+  m_copy.get().setup(vecmem::no_event, sorted_ids_buffer);
 
   // Make a temporary buffer for sorted track ids
   vecmem::data::vector_buffer<unsigned int> temp_sorted_ids_buffer{n_accepted,
                                                                    m_mr.main};
-  m_copy.get().setup(temp_sorted_ids_buffer)->ignore();
+  m_copy.get().setup(vecmem::no_event, temp_sorted_ids_buffer);
 
   // track id to the index of sorted ids
   vecmem::data::vector_buffer<unsigned int> inverted_ids_buffer{n_tracks,
                                                                 m_mr.main};
-  m_copy.get().setup(inverted_ids_buffer)->ignore();
+  m_copy.get().setup(vecmem::no_event, inverted_ids_buffer);
 
   // Make a buffer of boolean elements (Whether a corresponding track id is
   // updated after an iteration)
   vecmem::data::vector_buffer<int> is_updated_buffer{n_tracks, m_mr.main};
-  m_copy.get().setup(is_updated_buffer)->ignore();
-  m_copy.get().memset(is_updated_buffer, 0)->ignore();
+  m_copy.get().setup(vecmem::no_event, is_updated_buffer);
+  m_copy.get().memset(vecmem::no_event, is_updated_buffer, 0);
 
   // Count track id apperance during removal process
   vecmem::data::vector_buffer<int> track_count_buffer{n_tracks, m_mr.main};
-  m_copy.get().setup(track_count_buffer)->ignore();
-  m_copy.get().memset(track_count_buffer, 0)->ignore();
+  m_copy.get().setup(vecmem::no_event, track_count_buffer);
+  m_copy.get().memset(vecmem::no_event, track_count_buffer, 0);
 
   // Prefix sum buffer used for the insertion sort during an iteration
   vecmem::data::vector_buffer<int> prefix_sums_buffer{n_tracks, m_mr.main};
-  m_copy.get().setup(prefix_sums_buffer)->ignore();
+  m_copy.get().setup(vecmem::no_event, prefix_sums_buffer);
 
   // Fill the sorted ids vector
   thrust::copy(thrust_policy, pre_accepted_ids_buffer.ptr(),
@@ -416,7 +416,7 @@ greedy_ambiguity_resolution_algorithm::operator()(
   // updated during an iteration
   vecmem::data::vector_buffer<unsigned int> updated_tracks_buffer{n_accepted,
                                                                   m_mr.main};
-  m_copy.get().setup(updated_tracks_buffer)->ignore();
+  m_copy.get().setup(vecmem::no_event, updated_tracks_buffer);
 
   // Device objects
   vecmem::unique_alloc_ptr<unsigned int> n_removable_tracks_device =
@@ -484,10 +484,10 @@ greedy_ambiguity_resolution_algorithm::operator()(
   // Make buffers used in prefix sum calculation
   vecmem::data::vector_buffer<int> block_offsets_buffer{nBlocks_scan,
                                                         m_mr.main};
-  m_copy.get().setup(block_offsets_buffer)->ignore();
+  m_copy.get().setup(vecmem::no_event, block_offsets_buffer);
   vecmem::data::vector_buffer<int> scanned_block_offsets_buffer{nBlocks_scan,
                                                                 m_mr.main};
-  m_copy.get().setup(scanned_block_offsets_buffer)->ignore();
+  m_copy.get().setup(vecmem::no_event, scanned_block_offsets_buffer);
 
   // Start the iteration
   while (!terminate && n_accepted > 0) {
@@ -681,7 +681,7 @@ greedy_ambiguity_resolution_algorithm::operator()(
        m_mr.host, vecmem::data::buffer_type::resizable},
       {},
       tracks_view.measurements};
-  m_copy.get().setup(res_track_candidates_buffer.tracks)->ignore();
+  m_copy.get().setup(vecmem::no_event, res_track_candidates_buffer.tracks);
 
   // Fill the output track candidates
   {

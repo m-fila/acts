@@ -38,12 +38,11 @@ void silicon_pixel_spacepoint_formation_algorithm::form_spacepoints_kernel(
         // Put the detector view into device memory.
         vecmem::data::vector_buffer<typename detector_traits_t::view>
             device_det(1u, mr().main);
-        copy().setup(device_det)->ignore();
+        copy().setup(vecmem::no_event, device_det);
         copy()(
             vecmem::data::vector_view<const typename detector_traits_t::view>(
                 1u, &det),
-            device_det)
-            ->ignore();
+            device_det);
 
         // Launch the kernel.
         squeue.submit([&](::sycl::handler& h) {

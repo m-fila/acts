@@ -124,7 +124,7 @@ run_progressive_kalman_filter(
   typename edm::track_state_collection<algebra_t>::buffer track_states_buffer{
       cfg.run_smoother == smoother_type::e_none ? 0u : n_max_states, mr,
       vecmem::data::buffer_type::resizable};
-  copy.setup(track_states_buffer)->ignore();
+  copy.setup(vecmem::no_event, track_states_buffer);
 
   // Track data collected by the measurement updater during pattern recog.
   vecmem::vector<track_state_candidate> track_cands{};
@@ -163,7 +163,7 @@ run_progressive_kalman_filter(
   auto sf_sequences_buffer =
       vecmem::data::jagged_vector_buffer<typename detector_t::surface_type>{
           seqs_sizes, mr, &mr, vecmem::data::buffer_type::resizable};
-  copy.setup(sf_sequences_buffer)->ignore();
+  copy.setup(vecmem::no_event, sf_sequences_buffer);
 
   for (unsigned int seed_idx = 0u; seed_idx < seeds.size(); ++seed_idx) {
     const auto& seed = seeds[seed_idx];

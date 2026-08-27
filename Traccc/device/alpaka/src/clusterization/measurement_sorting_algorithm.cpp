@@ -90,8 +90,8 @@ measurement_sorting_algorithm::operator()(
   // Create the output buffer.
   output_type result{measurements_view.capacity(), m_mr.main,
                      vecmem::data::buffer_type::resizable};
-  m_copy.get().setup(result)->ignore();
-  m_copy.get()(measurements_view.size(), result.size())->ignore();
+  m_copy.get().setup(vecmem::no_event, result);
+  m_copy.get()(vecmem::no_event, measurements_view.size(), result.size());
 
   // Fill it with the sorted measurements.
   static constexpr unsigned int BLOCK_SIZE = 256;

@@ -83,7 +83,7 @@ measurement_sorting_algorithm::operator()(
   // Create a vector of measurement indices, which would be sorted.
   vecmem::data::vector_buffer<unsigned int> indices(
       measurements_view.capacity(), m_mr.main);
-  m_copy.get().setup(indices)->ignore();
+  m_copy.get().setup(vecmem::no_event, indices);
   thrust::for_each(policy, indices.ptr(), indices.ptr() + indices.capacity(),
                    device::sorting_index_filler{indices});
 
@@ -95,8 +95,8 @@ measurement_sorting_algorithm::operator()(
   // Create the output buffer.
   output_type result{measurements_view.capacity(), m_mr.main,
                      vecmem::data::buffer_type::resizable};
-  m_copy.get().setup(result)->ignore();
-  m_copy.get()(measurements_view.size(), result.size())->ignore();
+  m_copy.get().setup(vecmem::no_event, result);
+  m_copy.get()(vecmem::no_event, measurements_view.size(), result.size());
 
   // Fill it with the sorted measurements.
   static constexpr unsigned int BLOCK_SIZE = 256;
