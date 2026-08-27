@@ -39,7 +39,7 @@ auto silicon_pixel_spacepoint_formation_algorithm::operator()(
   // Create the result buffer.
   edm::spacepoint_collection::buffer spacepoints(
       n_measurements, mr().main, vecmem::data::buffer_type::resizable);
-  copy().setup(spacepoints)->ignore();
+  copy().setup(vecmem::ignore_event, spacepoints);
 
   // Launch the spacepoint formation kernel.
   form_spacepoints_kernel({n_measurements, det, measurements, spacepoints});
