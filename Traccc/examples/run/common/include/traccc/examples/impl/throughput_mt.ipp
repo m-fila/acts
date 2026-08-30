@@ -314,7 +314,8 @@ int throughput_mt(std::string_view description, int argc, char* argv[],
             << throughput_opts.cold_run_events << ","
             << throughput_opts.processed_events << ","
             << times.get_time("Warm-up processing").count() << ","
-            << times.get_time("Event processing").count() << std::endl;
+            << times.get_time("Event processing").count() << ","
+            << std::getenv("CUDA_DEVICE_MAX_CONNECTIONS") << std::endl;
     logFile.close();
   }
 
