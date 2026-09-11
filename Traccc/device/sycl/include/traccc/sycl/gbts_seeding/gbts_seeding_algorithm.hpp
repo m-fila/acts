@@ -9,6 +9,7 @@
 
 // Local include(s).
 #include "traccc/sycl/utils/algorithm_base.hpp"
+#include "traccc/sycl/utils/await.hpp"
 
 // Project include(s).
 #include "traccc/gbts_seeding/device/gbts_seeding_algorithm.hpp"
@@ -35,7 +36,8 @@ class gbts_seeding_algorithm : public device::gbts_seeding_algorithm,
   gbts_seeding_algorithm(
       const gbts_seedfinder_config& cfg, const memory_resource& mr,
       const vecmem::copy& copy, queue_wrapper& queue,
-      std::unique_ptr<const Logger> logger = getDummyLogger().clone());
+      std::unique_ptr<const Logger> logger = getDummyLogger().clone(),
+      await_function_type await_func = await_sync_event);
 
  private:
   /// @name Function(s) inherited from @c
