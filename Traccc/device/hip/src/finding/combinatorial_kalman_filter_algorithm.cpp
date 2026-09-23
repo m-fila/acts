@@ -19,8 +19,4 @@ combinatorial_kalman_filter_algorithm::combinatorial_kalman_filter_algorithm(
           config, mr, copy, std::move(logger), std::move(kf_fitter)),
       hip::algorithm_base(str) {}
 
-void combinatorial_kalman_filter_algorithm::synchronize() const {
-  stream().synchronize();
-}
-
 }  // namespace traccc::hip

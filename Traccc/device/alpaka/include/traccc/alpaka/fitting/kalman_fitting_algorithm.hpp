@@ -88,9 +88,6 @@ class kalman_fitting_algorithm : public device::kalman_fitting_algorithm,
 
   /// @}
 
-  /// Wait for outstanding work on the algorithm stream or queue.
-  void synchronize() const override;
-
 };  // class kalman_fitting_algorithm
 
 }  // namespace traccc::alpaka

@@ -8,6 +8,7 @@
 #pragma once
 
 // Project include(s).
+#include "traccc/device/abstract_awaitable.hpp"
 #include "traccc/utils/memory_resource.hpp"
 
 // VecMem include(s).
