@@ -152,7 +152,7 @@ void clusterization_algorithm::cluster_maker_kernel(
                       permutation_map_view, cluster_data);
   // The base class destroys the input buffers right after this call, so
   // the kernel must finish before returning.
-  queue().synchronize();
+  synchronize();
 }
 
 }  // namespace traccc::alpaka

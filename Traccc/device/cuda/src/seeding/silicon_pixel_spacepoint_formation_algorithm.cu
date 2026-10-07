@@ -97,7 +97,7 @@ void silicon_pixel_spacepoint_formation_algorithm::form_spacepoints_kernel(
   TRACCC_CUDA_ERROR_CHECK(cudaGetLastError());
   // The base class destroys the prefix sum buffer right after this call, so
   // the kernel must finish before returning.
-  stream().synchronize();
+  synchronize();
 }
 
 }  // namespace traccc::cuda

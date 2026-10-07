@@ -86,7 +86,7 @@ void clusterization_algorithm::cluster_maker_kernel(
   TRACCC_HIP_ERROR_CHECK(hipGetLastError());
   // The base class destroys the input buffers right after this call, so
   // the kernel must finish before returning.
-  stream().synchronize();
+  synchronize();
 }
 
 }  // namespace traccc::hip
