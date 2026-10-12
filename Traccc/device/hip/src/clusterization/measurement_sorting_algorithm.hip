@@ -77,13 +77,12 @@ void measurement_sorting_algorithm::sorting_kernel(
 #error "Unrecognised HIP platform."
 #endif
 
-  const unsigned int num_threads = warp_size() * 8;
-  const unsigned int num_blocks =
-      (n_measurements + num_threads - 1) / num_threads;
+  static constexpr unsigned int BLOCK_SIZE = 256;
+  const unsigned int n_blocks = (n_measurements + BLOCK_SIZE - 1) / BLOCK_SIZE;
 
   // Sort the indices by the sorting keys, with a radix sort.
-  hipLaunchKernelGGL(kernels::fill_measurement_sort_keys, num_blocks,
-                     num_threads, 0, str, payload.measurements, payload.keys,
+  hipLaunchKernelGGL(kernels::fill_measurement_sort_keys, n_blocks, BLOCK_SIZE,
+                     0, str, payload.measurements, payload.keys,
                      payload.indices);
   TRACCC_HIP_ERROR_CHECK(hipGetLastError());
   thrust::sort_by_key(policy, payload.keys.ptr(),
@@ -91,8 +90,8 @@ void measurement_sorting_algorithm::sorting_kernel(
                       payload.indices.ptr());
 
   // Fill the output with the sorted measurements.
-  hipLaunchKernelGGL(kernels::fill_sorted_measurements, num_blocks, num_threads,
-                     0, str, payload.measurements, payload.output,
+  hipLaunchKernelGGL(kernels::fill_sorted_measurements, n_blocks, BLOCK_SIZE, 0,
+                     str, payload.measurements, payload.output,
                      payload.indices);
   TRACCC_HIP_ERROR_CHECK(hipGetLastError());
 }
