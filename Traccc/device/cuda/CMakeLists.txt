@@ -177,33 +177,6 @@ foreach(DETECTOR_NAME ${TRACCC_SUPPORTED_DETECTORS})
     endforeach()
 endforeach()
 
-if(TRACCC_ENABLE_NVTX_PROFILING)
-    traccc_add_library(
-        nvtx_instrumentation
-        TYPE OBJECT
-        "src/inst_nvtx.cpp"
-    )
-
-    set_target_properties(
-        nvtx_instrumentation
-        PROPERTIES POSITION_INDEPENDENT_CODE ON
-    )
-
-    target_link_libraries(
-        nvtx_instrumentation
-        PRIVATE CUDA::nvtx3 ${CMAKE_DL_LIBS}
-    )
-
-    target_compile_options(
-        traccc_cuda
-        PRIVATE
-            $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=-finstrument-functions;-Xcompiler=-finstrument-functions-exclude-file-list=nvtx3/>
-            $<$<COMPILE_LANGUAGE:CXX>:-finstrument-functions;-finstrument-functions-exclude-file-list=nvtx3/>
-    )
-
-    target_link_libraries(traccc_cuda PRIVATE nvtx_instrumentation)
-endif()
-
 target_link_libraries(
     traccc_cuda
     PUBLIC traccc::core traccc::cuda_utils detray::core vecmem::core

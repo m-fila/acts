@@ -438,12 +438,6 @@ if(TRACCC_SETUP_GOOGLETEST)
     endif()
 endif()
 
-option(
-    TRACCC_ENABLE_NVTX_PROFILING
-    "Use instrument functions to enable fine grained profiling"
-    FALSE
-)
-
 # Build the traccc code.
 add_subdirectory(core)
 add_subdirectory(device/common)
