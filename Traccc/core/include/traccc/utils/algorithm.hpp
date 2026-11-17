@@ -52,24 +52,4 @@ class algorithm<R(A...)> {
   virtual output_type operator()(A... args) const = 0;
 };
 
-template <typename A, typename B, typename C, typename... R>
-auto compose(
-    std::function<std::remove_const_t<std::remove_reference_t<B>>(A)> f,
-    std::function<C(B)> g, R... rs) {
-  if constexpr (sizeof...(R) > 0) {
-    auto h = compose(g, rs...);
-    return [f, h](A&& i) { return h(f(std::move(i))); };
-  } else {
-    return [f, g](A&& i) { return g(f(std::move(i))); };
-  }
-}
-
-template <typename A, typename B, typename C>
-std::function<B(A&&)> side_effect(std::function<B(A)> f,
-                                  std::function<void(const C&)> s) {
-  return [=](A&& i) -> B {
-    s(i);
-    return f(std::move(i));
-  };
-}
 }  // namespace traccc
